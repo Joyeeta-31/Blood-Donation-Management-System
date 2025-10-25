@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>Edit Profile</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label>First name</label>
+      <input class="form-control" name="first_name" value="{{ request.user.first_name }}">
+    </div>
+    <div class="form-group col-md-6">
+      <label>Last name</label>
+      <input class="form-control" name="last_name" value="{{ request.user.last_name }}">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label>Phone</label>
+      <input class="form-control" name="phone" value="{{ profile.phone }}">
+    </div>
+    <div class="form-group col-md-6">
+      <label>Blood Group</label>
+      <select name="blood_group" class="form-control">
+        <option value="">-- Select --</option>
+        {% for bg in blood_groups %}
+          <option value="{{ bg }}" {% if profile.blood_group == bg %}selected{% endif %}>{{ bg }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label>City</label>
+      <input class="form-control" name="city" value="{{ profile.city }}">
+    </div>
+    <div class="form-group col-md-6">
+      <label>Profile Photo</label>
+      <input type="file" name="profile_photo" class="form-control-file">
+      {% if profile.profile_photo %}
+        <img src="{{ profile.profile_photo.url }}" alt="photo" style="max-width:120px;margin-top:8px;">
+      {% endif %}
+    </div>
+  </div>
+
+  <button class="btn btn-success">Save</button>
+</form>
+{% endblock %}

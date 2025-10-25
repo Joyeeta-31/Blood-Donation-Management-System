@@ -1,0 +1,22 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<h2>Search Donors</h2>
+<form method="get" class="form-inline mb-3">
+  <input class="form-control mr-2" name="q" placeholder="Blood group (A+) or city" value="{{ q }}">
+  <button class="btn btn-outline-primary">Search</button>
+</form>
+
+{% if results %}
+  <div class="list-group">
+    {% for p in results %}
+      <div class="list-group-item">
+        <strong>{{ p.user.get_full_name|default:p.user.username }}</strong>
+        — {{ p.blood_group }} — {{ p.city }}
+        <div class="small-muted">Contact: {{ p.phone|default:"-" }}</div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No donors found (try A+, O-, or a city name).</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Admin Dashboard</h2>
+
+    <!-- Statistics cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5>Total Donors</h5>
+                    <h3>{{ total_donors }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5>Pending Requests</h5>
+                    <h3>{{ pending_requests }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blood Inventory Table -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            Blood Inventory
+            <!-- Update Inventory Button -->
+            <a href="{% url 'manage_inventory' %}" class="btn btn-light btn-sm">Update Inventory</a>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Blood Group</th>
+                        <th>Total Units</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in inventory_by_group %}
+                    <tr>
+                        <td>{{ item.blood_group }}</td>
+                        <td>{{ item.total_units }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="2">No inventory found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pending Donation Requests -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            Pending Donation Requests
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Requester</th>
+                        <th>Blood Group</th>
+                        <th>Units</th>
+                        <th>City</th>
+                        <th>Hospital</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests|default_if_none:"" %}
+                    {% if req.status == 'pending' %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ req.requester.username }}</td>
+                        <td>{{ req.blood_group }}</td>
+                        <td>{{ req.units }}</td>
+                        <td>{{ req.city }}</td>
+                        <td>{{ req.hospital_name }}</td>
+                        <td>
+                            <form method="post" action="{% url 'admin_request_approve' req.pk %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-sm">Approve</button>
+                            </form>
+                            <form method="post" action="{% url 'admin_request_reject' req.pk %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button class="btn btn-danger btn-sm">Reject</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% empty %}
+                    <tr><td colspan="7">No pending requests.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

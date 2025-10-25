@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blood Management System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    /* small custom */
+    .small-muted { font-size: 0.9rem; color: #666; }
+    .card-compact { padding: 1rem; }
+  </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-dark bg-danger">
+  <a class="navbar-brand" href="{% url 'home' %}">BloodMS</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navMain">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navMain">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+      {% if user.is_authenticated %}
+        {% if user.role == 'donor' %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">My Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'make_request' %}">Request Blood</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'search_donors' %}?q=">Find Donors</a></li>
+        {% endif %}
+        {% if user.is_staff or user.role == 'admin' %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Admin Dashboard</a></li>
+          <!-- additional admin template pages (donors, banks) -->
+          <li class="nav-item"><a class="nav-link" href="{% url 'admin_donors' %}">Donors</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'admin_requests' %}">Requests</a></li>
+        {% endif %}
+      {% endif %}
+    </ul>
+
+    <ul class="navbar-nav ml-auto">
+      {% if user.is_authenticated %}
+        <li class="nav-item nav-text align-self-center mr-2">
+          <span class="small-muted">Hi, {{ user.get_full_name|default:user.username }}</span>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+      {% else %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+
+<div class="container mt-4">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
