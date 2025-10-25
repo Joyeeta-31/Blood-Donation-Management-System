@@ -1,4 +1,4 @@
-# core/views.py
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
@@ -27,7 +27,7 @@ from .serializers import (
 )
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
-# ---------- API viewsets ----------
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -80,7 +80,7 @@ class DonationRequestViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Already processed."}, status=status.HTTP_400_BAD_REQUEST)
 
         with transaction.atomic():
-            # select inventory for this blood group
+
             inv = BloodInventory.objects.select_for_update().filter(blood_group=req.blood_group).first()
             if not inv:
                 return Response({"detail": "No inventory available for this blood group."}, status=status.HTTP_400_BAD_REQUEST)
@@ -130,7 +130,7 @@ class DonationHistoryViewSet(viewsets.ModelViewSet):
         serializer.save(donor=self.request.user)
 
 
-# ---------- Template views ----------
+
 
 def home(request):
     return render(request, 'core/home.html')
@@ -296,7 +296,7 @@ def edit_profile(request):
     })
 
 
-# ---------- Admin template views ----------
+
 
 def staff_required(view_func):
     return user_passes_test(lambda u: u.is_active and u.is_staff)(view_func)
@@ -364,7 +364,7 @@ def admin_donors(request):
     return render(request, 'core/admin_donors.html', {'donors': donor_profiles})
 
 
-# ---------- Signals for auto inventory ----------
+
 
 @receiver(post_save, sender=BloodBank)
 def create_inventory_for_new_bank(sender, instance, created, **kwargs):
@@ -373,7 +373,7 @@ def create_inventory_for_new_bank(sender, instance, created, **kwargs):
             BloodInventory.objects.get_or_create(
                 blood_bank=instance,
                 blood_group=bg,
-                defaults={'units': 10}  # default starting units
+                defaults={'units': 10} 
             )
 
 @staff_required
